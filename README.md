@@ -2,6 +2,9 @@
 
 Open WebUI Extension is a single-click installer of Ollama as well as Open WebUI for your Docker Desktop.
 
+<img width="1486" alt="image" src="https://github.com/user-attachments/assets/c2ef015e-24de-494b-a708-8ff5e8b99cf4" />
+
+
 This repository defines an example of a Docker extension. The files in this repository have been automatically generated as a result of running `docker extension init`.
 
 This extension is composed of:
