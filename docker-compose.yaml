@@ -18,12 +18,45 @@ services:
       - ENABLE_MODEL_FILTER=true
       - ENABLE_COMMUNITY_SHARING=false
       - CORS_ALLOW_ORIGIN=*
+      # MCP Integration Settings
+      - ENABLE_OPENAPI_FUNCTIONS=true
+      - OPENAPI_FUNCTIONS_URL=http://mcp-proxy:8001
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "model-runner.docker.internal:host-gateway"
     networks:
       - openwebui-network
     restart: unless-stopped
+    depends_on:
+      - mcp-proxy
+    labels:
+      - "com.docker.desktop.extension=true"
+      - "com.docker.desktop.extension.api.version=>=0.3.4"
+
+  mcp-proxy:
+    build: 
+      context: ./mcp
+      dockerfile: Dockerfile
+    container_name: openwebui-mcp-proxy
+    ports:
+      - "8001:8001"
+    volumes:
+      # Mount Docker socket for Docker operations
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Mount docker-compose files for compose operations
+      - .:/workspace:ro
+    environment:
+      - MCP_PORT=8001
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    networks:
+      - openwebui-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     labels:
       - "com.docker.desktop.extension=true"
       - "com.docker.desktop.extension.api.version=>=0.3.4"
