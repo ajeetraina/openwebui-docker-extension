@@ -17,7 +17,7 @@ This extension is composed of:
 
 - A [frontend](./ui) app in React that makes a request to the `/hello` endpoint and displays the payload in Docker Desktop.
 - A [backend](./backend) container that runs an API in Go. It exposes the `/hello` endpoint which returns a JSON payload.
-- A [MCP proxy](./mcp) service that provides AI-powered Docker management through natural language.
+- An integrated [MCP service](./mcp) that provides AI-powered Docker management through natural language.
 
 > You can build your Docker Extension using your fav tech stack:
 >
@@ -54,7 +54,10 @@ The MCP integration adds intelligent Docker management tools that allow you to:
 
 1. **Install the Extension**:
    ```bash
-   docker extension install ajeetraina777/openwebui-model-runner:3.0
+   git clone https://github.com/ajeetraina/openwebui-docker-extension.git
+   cd openwebui-docker-extension
+   chmod +x install-extension.sh
+   ./install-extension.sh
    ```
 
 2. **Access OpenWebUI**: Navigate to `http://localhost:8090`
@@ -69,19 +72,28 @@ The MCP integration adds intelligent Docker management tools that allow you to:
 ## 🔧 Architecture
 
 ```
-┌─────────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   OpenWebUI        │    │   MCP Proxy      │    │  Docker MCP     │
-│   (Port 8090)      │◄──►│   (Port 8001)    │◄──►│  Tools Server   │
-│                    │    │   (mcpo)         │    │                 │
-└─────────────────────┘    └──────────────────┘    └─────────────────┘
-                                     │
-                                     ▼
-                           ┌─────────────────┐
-                           │  Docker Engine  │
-                           │  /var/run/      │
-                           │  docker.sock    │
-                           └─────────────────┘
+┌─────────────────────────────────────────────────────────┐
+│                Single Container                          │
+│  ┌─────────────────────┐    ┌─────────────────────────┐  │
+│  │   OpenWebUI        │    │   MCP Proxy            │  │
+│  │   (Port 8080)      │◄──►│   (Port 8001)          │  │
+│  │                    │    │   (mcpo + tools)       │  │
+│  └─────────────────────┘    └─────────────────────────┘  │
+│                              │                           │
+│                              ▼                           │
+│                    ┌─────────────────────┐               │
+│                    │  Docker Socket      │               │
+│                    │  /var/run/          │               │
+│                    │  docker.sock        │               │
+│                    └─────────────────────┘               │
+└─────────────────────────────────────────────────────────┘
 ```
+
+**Key Architectural Benefits:**
+- ✅ **Single Container**: Eliminates build context issues during extension installation
+- ✅ **Supervisor Management**: Both services run reliably with auto-restart
+- ✅ **Shared Resources**: Efficient resource usage and simplified networking
+- ✅ **Docker Extension Compatible**: Works seamlessly with Docker Desktop extension system
 
 ## 📋 Available MCP Tools
 
@@ -109,22 +121,28 @@ The MCP integration adds intelligent Docker management tools that allow you to:
 
 ### Environment Variables
 
-The MCP proxy service supports several configuration options:
+The integrated MCP service supports several configuration options:
 
 ```yaml
 environment:
-  - MCP_PORT=8001                    # Port for MCP proxy server
-  - DOCKER_HOST=unix:///var/run/docker.sock  # Docker socket path
+  - MCP_PORT=8001                              # Port for MCP proxy server
+  - DOCKER_HOST=unix:///var/run/docker.sock    # Docker socket path
+  - ENABLE_OPENAPI_FUNCTIONS=true              # Enable OpenAPI function calling
+  - OPENAPI_FUNCTIONS_URL=http://localhost:8001 # MCP proxy endpoint (localhost since same container)
 ```
 
-### OpenWebUI MCP Settings
+### Supervisor Configuration
 
-The OpenWebUI service is automatically configured to use MCP tools:
+Both services are managed by supervisor for reliability:
 
-```yaml
-environment:
-  - ENABLE_OPENAPI_FUNCTIONS=true    # Enable OpenAPI function calling
-  - OPENAPI_FUNCTIONS_URL=http://mcp-proxy:8001  # MCP proxy endpoint
+```ini
+[program:openwebui]
+command=/app/docker-entrypoint.sh
+autorestart=true
+
+[program:mcp-proxy]
+command=mcpo --host 0.0.0.0 --port 8001 --cors --verbose -- python3 /app/mcp/docker_mcp_tools.py
+autorestart=true
 ```
 
 ## 📖 Usage Examples
@@ -212,9 +230,10 @@ This Swagger UI interface shows:
 - Container operations are limited to inspection and monitoring
 - No destructive operations (delete, stop, restart) are exposed
 
-### Network Isolation
-- MCP proxy runs in the same Docker network as OpenWebUI
-- Not directly accessible from outside the Docker extension
+### Container Isolation
+- Both services run in the same container with proper user permissions
+- Supervisor manages processes with appropriate user contexts
+- Docker socket access is controlled and limited
 
 ### User Permissions
 - MCP tools respect Docker daemon permissions
@@ -251,48 +270,55 @@ Tool(
 
 ### Local Development
 
-For development with hot reloading:
+For development:
 
 ```bash
-# Start MCP proxy in development mode
-cd mcp
-python docker_mcp_tools.py
+# Build and test locally
+docker buildx build -t openwebui-model-runner:latest . --load
 
-# In another terminal, start mcpo proxy
-mcpo --port 8001 --cors -- python docker_mcp_tools.py
+# Test the container
+docker run -p 8090:8080 -p 8001:8001 -v /var/run/docker.sock:/var/run/docker.sock:ro openwebui-model-runner:latest
+
+# Check both services
+docker exec <container> supervisorctl status
 ```
 
 ## 🐛 Troubleshooting
 
 ### Common Issues
 
-**MCP Proxy Not Starting:**
-- Check Docker socket is mounted: `-v /var/run/docker.sock:/var/run/docker.sock`
-- Verify port 8001 is not in use
-- Check container logs: `docker logs openwebui-mcp-proxy`
+**Extension Installation Fails:**
+- Ensure Docker Desktop is running
+- Check that all required files exist
+- Run: `./install-extension.sh` for automated validation
 
-**Tools Not Available in OpenWebUI:**
-- Ensure `ENABLE_OPENAPI_FUNCTIONS=true` in OpenWebUI environment
-- Verify `OPENAPI_FUNCTIONS_URL=http://mcp-proxy:8001` is correct
-- Check MCP proxy health: `curl http://localhost:8001/docs`
+**MCP Tools Not Working:**
+- Check container logs: `docker logs openwebui-model-runner`
+- Verify MCP service: `curl http://localhost:8001/docs`
+- Check supervisor status: `docker exec openwebui-model-runner supervisorctl status`
 
 **Permission Errors:**
-- Verify Docker socket permissions
-- Check if user is in docker group (for development)
+- Verify Docker socket is mounted: `-v /var/run/docker.sock:/var/run/docker.sock:ro`
+- Check Docker daemon permissions
 
 ### Debug Commands
 
 ```bash
-# Check MCP proxy status
+# Check extension status
+docker extension ls
+
+# View container logs
+docker logs openwebui-model-runner
+
+# Check both services status
+docker exec openwebui-model-runner supervisorctl status
+
+# View individual service logs
+docker exec openwebui-model-runner tail -f /app/logs/openwebui.log
+docker exec openwebui-model-runner tail -f /app/logs/mcp.log
+
+# Test MCP API directly
 curl http://localhost:8001/docs
-
-# View MCP proxy logs
-docker logs openwebui-mcp-proxy
-
-# Test Docker socket access
-docker exec openwebui-mcp-proxy docker ps
-
-# List available tools
 curl http://localhost:8001/tools
 ```
 
@@ -398,4 +424,4 @@ To contribute to MCP integration:
 
 ---
 
-*The MCP integration makes this Docker extension incredibly powerful, allowing natural language control of your entire Docker environment!* 🚀
+*The integrated MCP approach makes this Docker extension incredibly powerful and reliable, allowing natural language control of your entire Docker environment in a single, robust container!* 🚀
