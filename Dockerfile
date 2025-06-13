@@ -39,29 +39,8 @@ COPY backend.env /app/backend.env
 COPY docker-entrypoint.sh /app/docker-entrypoint.sh
 RUN chmod +x /app/docker-entrypoint.sh
 
-# Create supervisor configuration for running both services
-COPY <<EOF /etc/supervisor/conf.d/supervisord.conf
-[supervisord]
-nodaemon=true
-logfile=/app/logs/supervisord.log
-pidfile=/app/logs/supervisord.pid
-
-[program:openwebui]
-command=/app/docker-entrypoint.sh
-stdout_logfile=/app/logs/openwebui.log
-stderr_logfile=/app/logs/openwebui_error.log
-autorestart=true
-user=1000
-
-[program:mcp-proxy]
-command=mcpo --host 0.0.0.0 --port 8001 --cors --verbose -- python3 /app/mcp/docker_mcp_tools.py
-directory=/app/mcp
-stdout_logfile=/app/logs/mcp.log
-stderr_logfile=/app/logs/mcp_error.log
-autorestart=true
-user=1000
-environment=MCP_PORT=8001,DOCKER_HOST=unix:///var/run/docker.sock
-EOF
+# Copy supervisor configuration
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Environment for Model Runner and MCP
 ENV MODEL_RUNNER_ENABLED=true \
