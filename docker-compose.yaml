@@ -35,8 +35,8 @@ services:
 
   mcp-proxy:
     build: 
-      context: ./mcp
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: mcp/Dockerfile
     container_name: openwebui-mcp-proxy
     ports:
       - "8001:8001"
