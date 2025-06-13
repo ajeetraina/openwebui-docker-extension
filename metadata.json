@@ -1,5 +1,5 @@
 {
-  "icon": "ollama.svg",
+  "icon": "docker.svg",
   "vm": {
     "composefile": "docker-compose.yaml",
     "exposes": {
@@ -8,9 +8,20 @@
   },
   "ui": {
     "dashboard-tab": {
-      "title": "Open WebUI",
+      "title": "OpenWebUI + Model Runner",
       "src": "index.html",
       "root": "ui"
     }
-  }
+  },
+  "host": {
+    "binaries": [
+      {
+        "name": "docker",
+        "cmd": "docker"
+      }
+    ]
+  },
+  "capabilities": [
+    "host-networking"
+  ]
 }
