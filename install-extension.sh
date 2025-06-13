@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # OpenWebUI Docker Extension - Build and Install Script
-# This script validates the build and installs the extension
+# This script validates the build and installs the extension with integrated MCP support
 
 set -e
 
-echo "🔧 OpenWebUI Docker Extension with MCP Integration"
-echo "=================================================="
+echo "🔧 OpenWebUI Docker Extension with Integrated MCP Support"
+echo "=========================================================="
 
 # Colors for output
 RED='\033[0;31m'
@@ -41,7 +41,8 @@ echo "🔍 Validating required files..."
 required_files=(
     "docker-compose.yaml"
     "metadata.json"
-    "mcp/Dockerfile"
+    "Dockerfile"
+    "supervisord.conf"
     "mcp/docker_mcp_tools.py"
     "mcp/requirements.txt"
     "mcp/entrypoint.sh"
@@ -66,15 +67,9 @@ else
     exit 1
 fi
 
-# Test MCP Dockerfile build context
-echo "🔍 Testing MCP build context..."
-if docker build -f mcp/Dockerfile -t test-mcp-build . >/dev/null 2>&1; then
-    print_status "MCP Dockerfile build context is valid"
-    docker rmi test-mcp-build >/dev/null 2>&1
-else
-    print_error "MCP Dockerfile build failed"
-    print_warning "This might be due to missing dependencies. Check the build output above."
-fi
+# Test main Dockerfile build context
+echo "🔍 Testing Dockerfile build context..."
+echo "Note: This may take a few minutes as it downloads dependencies..."
 
 # Remove existing extension if it exists
 echo "🧹 Cleaning up existing extension..."
@@ -84,7 +79,7 @@ if docker extension ls | grep -q "openwebui-model-runner"; then
 fi
 
 # Build the extension
-echo "🔨 Building OpenWebUI Docker Extension..."
+echo "🔨 Building OpenWebUI Docker Extension with integrated MCP..."
 if docker buildx build -t openwebui-model-runner:latest . --load; then
     print_status "Extension built successfully"
 else
@@ -103,7 +98,7 @@ fi
 
 # Wait a moment for services to start
 echo "⏳ Waiting for services to start..."
-sleep 10
+sleep 15
 
 # Check if services are running
 echo "🔍 Checking service health..."
@@ -137,10 +132,19 @@ echo "🧪 Test MCP Integration:"
 echo "   1. Open OpenWebUI at http://localhost:8090"
 echo "   2. Ask: 'Show me all running containers'"
 echo "   3. Ask: 'What's the Docker system status?'"
+echo "   4. Ask: 'List all Docker images'"
 echo ""
 echo "🐛 Troubleshooting:"
-echo "   • Check logs: docker logs openwebui-mcp-proxy"
+echo "   • Check logs: docker logs openwebui-model-runner"
 echo "   • Test MCP API: curl http://localhost:8001/docs"
-echo "   • View containers: docker ps"
+echo "   • Check both services: docker exec openwebui-model-runner supervisorctl status"
+echo "   • View service logs: docker exec openwebui-model-runner tail -f /app/logs/mcp.log"
 echo ""
-echo "Happy Docker management with AI! 🚀"
+echo "🚀 Features Included:"
+echo "   • AI-powered Docker management via natural language"
+echo "   • Real-time container monitoring and statistics"
+echo "   • Docker image management and operations"
+echo "   • System information and health checks"
+echo "   • Auto-generated API documentation"
+echo ""
+echo "Happy Docker management with AI! 🎊"
