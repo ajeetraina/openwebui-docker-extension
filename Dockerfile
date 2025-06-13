@@ -27,7 +27,9 @@ RUN mkdir -p /app/model-runner /app/mcp /app/config /app/logs
 # Install MCP dependencies
 COPY mcp/requirements.txt /app/mcp/requirements.txt
 RUN pip3 install --no-cache-dir -r /app/mcp/requirements.txt
-RUN pip3 install --no-cache-dir mcpo
+
+# Install mcpo (MCP-to-OpenAPI proxy) - use latest available version
+RUN pip3 install --no-cache-dir mcpo==0.0.15
 
 # Copy MCP files
 COPY mcp/docker_mcp_tools.py /app/mcp/docker_mcp_tools.py
