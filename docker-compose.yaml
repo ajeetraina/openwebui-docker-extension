@@ -1,9 +1,6 @@
 services:
   openwebui:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: openwebui-model-runner:latest
+    image: ajeetraina777/openwebui-docker-extension:2.0
     container_name: openwebui-model-runner
     volumes:
       - openwebui-data:/app/backend/data
