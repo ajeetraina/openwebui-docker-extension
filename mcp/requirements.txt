@@ -1,6 +1,5 @@
 # MCP (Model Context Protocol) dependencies
 mcp==1.0.0
-mcpo==0.1.0
 
 # Docker integration
 docker==7.1.0
