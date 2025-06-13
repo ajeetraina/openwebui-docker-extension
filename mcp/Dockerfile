@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Copy requirements and install Python dependencies
-COPY requirements.txt .
+COPY mcp/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Install mcpo (MCP-to-OpenAPI proxy)
@@ -21,8 +21,8 @@ RUN useradd -m -u 1000 mcpuser && \
     chown -R mcpuser:mcpuser /app
 
 # Copy MCP server and configuration
-COPY docker_mcp_tools.py .
-COPY entrypoint.sh .
+COPY mcp/docker_mcp_tools.py .
+COPY mcp/entrypoint.sh .
 RUN chmod +x docker_mcp_tools.py entrypoint.sh
 
 # Create data directory
