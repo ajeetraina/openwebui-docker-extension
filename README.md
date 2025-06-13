@@ -1,15 +1,14 @@
 :q!# OpenWebUI Docker Extension
 
 
-Open WebUI Extension is a single-click installer of Ollama as well as Open WebUI for your Docker Desktop.
+Open WebUI Extension is a single-click installer of Docker Model Runner and Open WebUI for your Docker Desktop.
 
-<img width="1486" alt="image" src="https://github.com/user-attachments/assets/c2ef015e-24de-494b-a708-8ff5e8b99cf4" />
 
 
 ## Try it now
 
 ```
-$ docker extension install ajeetraina777/openwebui-docker-extension:1.0.0
+$ docker extension install ajeetraina777/openwebui-model-runner:3.0
 ```
 
 This repository defines an example of a Docker extension. The files in this repository have been automatically generated as a result of running `docker extension init`.
@@ -42,13 +41,13 @@ You can use `docker` to build, install and push your extension. Also, we provide
 To build the extension, use `make build-extension` **or**:
 
 ```shell
-  docker buildx build -t openwebui-docker-extension:latest . --load
+  docker buildx build -t openwebui-model-runner:latest . --load
 ```
 
 To install the extension, use `make install-extension` **or**:
 
 ```shell
-  docker extension install openwebui-docker-extension:latest
+  docker extension install openwebui-model-runner:3.0
 ```
 
 > If you want to automate this command, use the `-f` or `--force` flag to accept the warning message.
@@ -71,19 +70,19 @@ This starts a development server that listens on port `3000`.
 You can now tell Docker Desktop to use this as the frontend source. In another terminal run:
 
 ```shell
-  docker extension dev ui-source openwebui-docker-extension:latest http://localhost:3000
+  docker extension dev ui-source openwebui-model-runner:3.0 http://localhost:3000
 ```
 
 In order to open the Chrome Dev Tools for your extension when you click on the extension tab, run:
 
 ```shell
-  docker extension dev debug openwebui-docker-extension:latest
+  docker extension dev debug openwebui-model-runner:3.0
 ```
 
 Each subsequent click on the extension tab will also open Chrome Dev Tools. To stop this behaviour, run:
 
 ```shell
-  docker extension dev reset openwebui-docker-extension:latest
+  docker extension dev reset openwebui-model-runner:3.0
 ```
 
 ### Backend development (optional)
@@ -96,7 +95,7 @@ Whenever you make changes in the [backend](./backend) source code, you will need
 Use the `docker extension update` command to remove and re-install the extension automatically:
 
 ```shell
-docker extension update openwebui-docker-extension:latest
+docker extension update openwebui-model-runner:3.0
 ```
 
 > If you want to automate this command, use the `-f` or `--force` flag to accept the warning message.
@@ -108,7 +107,7 @@ docker extension update openwebui-docker-extension:latest
 To remove the extension:
 
 ```shell
-docker extension rm openwebui-docker-extension:latest
+docker extension rm openwebui-model-runner:3.0
 ```
 
 ## What's next?
