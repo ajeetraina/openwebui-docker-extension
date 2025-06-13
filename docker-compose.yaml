@@ -4,55 +4,36 @@ services:
     container_name: openwebui-model-runner
     volumes:
       - openwebui-data:/app/backend/data
+      # Mount Docker socket for MCP Docker operations
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:
-      - "8090:8080"
+      - "8090:8080"  # OpenWebUI
+      - "8001:8001"  # MCP Proxy
     environment:
       - OPENAI_API_BASE_URL=http://model-runner.docker.internal/engines/llama.cpp/v1
       - OPENAI_API_KEY=dockermodelrunner
       - ENABLE_OLLAMA_API=false
       - ENABLE_OPENAI_API=true
-      - WEBUI_NAME=OpenWebUI + Docker Model Runner
+      - WEBUI_NAME=OpenWebUI + Docker Model Runner + MCP
       - WEBUI_AUTH=false
       - ENABLE_SIGNUP=true
       - DEFAULT_USER_ROLE=user
       - ENABLE_MODEL_FILTER=true
       - ENABLE_COMMUNITY_SHARING=false
       - CORS_ALLOW_ORIGIN=*
-      # MCP Integration Settings
+      # MCP Integration Settings (localhost since both services are in same container)
       - ENABLE_OPENAPI_FUNCTIONS=true
-      - OPENAPI_FUNCTIONS_URL=http://mcp-proxy:8001
+      - OPENAPI_FUNCTIONS_URL=http://localhost:8001
+      - MCP_PORT=8001
+      - DOCKER_HOST=unix:///var/run/docker.sock
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "model-runner.docker.internal:host-gateway"
     networks:
       - openwebui-network
     restart: unless-stopped
-    depends_on:
-      - mcp-proxy
-    labels:
-      - "com.docker.desktop.extension=true"
-      - "com.docker.desktop.extension.api.version=>=0.3.4"
-
-  mcp-proxy:
-    build: 
-      context: .
-      dockerfile: mcp/Dockerfile
-    container_name: openwebui-mcp-proxy
-    ports:
-      - "8001:8001"
-    volumes:
-      # Mount Docker socket for Docker operations
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      # Mount docker-compose files for compose operations
-      - .:/workspace:ro
-    environment:
-      - MCP_PORT=8001
-      - DOCKER_HOST=unix:///var/run/docker.sock
-    networks:
-      - openwebui-network
-    restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8001/docs"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
       interval: 30s
       timeout: 10s
       retries: 3
