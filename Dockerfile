@@ -48,7 +48,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
 
-COPY docker-compose.yaml .
-COPY metadata.json .
-COPY docker.svg .
-COPY ui ui
+COPY docker-compose.yaml /docker-compose.yaml 
+COPY metadata.json /metadata.json
+COPY docker.svg /docker.svg
+COPY ui /ui
