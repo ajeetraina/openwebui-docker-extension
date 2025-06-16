@@ -39,6 +39,7 @@ While this OpenWebUI Docker Extension provides powerful AI chat capabilities wit
 - **🎵 Audio Input**: Audio messages and voice input are not currently supported
 - **🖼️ Image Upload**: File upload functionality for images is not available
 - **📁 File Attachments**: General file upload/attachment features are limited
+- **MCP** - MCP is not working as of now
 
 # 🛰️ MCP (Model Context Protocol) Integration - Work in Progress
 
@@ -65,16 +66,19 @@ The MCP integration adds intelligent Docker management tools that allow you to:
    ./install-extension.sh
    ```
 
-2. **Access OpenWebUI**: Navigate to `http://localhost:8090`
+2. **Access OpenWebUI Model Runner Docker Extension**
 
-3. **Start Using MCP Tools**: Ask the AI assistant things like:
+
+Note: In future, you will be able to see MCP working. Right now, the functionality is not implemented.
+
+4. **Using MCP Tools**: Ask the AI assistant things like:
    - "Show me all running containers"
    - "Get logs for the web container"
    - "What's the resource usage of my app?"
    - "List all Docker images on this system"
    - "Pull the latest nginx image"
 
-## 🔧 Architecture
+## 🔧 Proposed Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────┐
