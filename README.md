@@ -47,7 +47,7 @@ The MCP integration adds intelligent Docker management tools that allow you to:
 
 1. **Install the Extension**:
    ```bash
-   git clone https://github.com/ajeetraina/openwebui-docker-extension.git
+   git clone https://github.com/ajeetraina/openwebui-docker-model-runner.git
    cd openwebui-docker-extension
    chmod +x install-extension.sh
    ./install-extension.sh
