@@ -28,7 +28,7 @@ Request one or submit yours [here](https://github.com/docker/extensions-sdk/issu
 
 </details>
 
-# 🛰️ MCP (Model Context Protocol) Integration
+# 🛰️ MCP (Model Context Protocol) Integration - Work in Progress
 
 This OpenWebUI Docker Extension now includes full **Model Context Protocol (MCP)** support, providing powerful Docker management capabilities directly through AI chat interfaces.
 
