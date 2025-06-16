@@ -4,12 +4,6 @@
 Open WebUI Extension is a single-click installer of Docker Model Runner and Open WebUI for your Docker Desktop.
 
 
-
-## Try it now
-
-```
-$ docker extension install ajeetraina777/openwebui-model-runner
-
 This repository defines an example of a Docker extension. The files in this repository have been automatically generated as a result of running `docker extension init`.
 
 This extension is composed of:
