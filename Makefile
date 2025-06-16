@@ -1,5 +1,5 @@
-EXTENSION_NAME := openwebui-model-runner
-IMAGE_NAME := $(EXTENSION_NAME):latest
+EXTENSION_NAME := ajeetraina777/openwebui-model-runner
+IMAGE_NAME := $(EXTENSION_NAME):2.0
 
 .PHONY: help
 help:
