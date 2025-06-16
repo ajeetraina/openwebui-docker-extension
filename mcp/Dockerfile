@@ -32,7 +32,12 @@ RUN mkdir -p /app/data && \
 # Add mcpuser to docker group for Docker socket access
 RUN usermod -aG docker mcpuser
 
-USER mcpuser
+# Create user with ID 1000
+RUN useradd -u 1000 -m openwebui
+
+# Or create group and user
+RUN groupadd -g 1000 openwebui && \
+    useradd -u 1000 -g openwebui -m openwebui
 
 # Expose mcpo proxy port
 EXPOSE 8001
