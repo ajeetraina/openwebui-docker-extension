@@ -28,6 +28,15 @@ Request one or submit yours [here](https://github.com/docker/extensions-sdk/issu
 
 </details>
 
+# Known Limitations ⚠️
+
+While this OpenWebUI Docker Extension provides powerful AI chat capabilities with Docker management through MCP, there are some current limitations to be aware of:
+
+## **Input/Output Limitations**
+- **🎵 Audio Input**: Audio messages and voice input are not currently supported
+- **🖼️ Image Upload**: File upload functionality for images is not available
+- **📁 File Attachments**: General file upload/attachment features are limited
+
 # 🛰️ MCP (Model Context Protocol) Integration - Work in Progress
 
 This OpenWebUI Docker Extension now includes full **Model Context Protocol (MCP)** support, providing powerful Docker management capabilities directly through AI chat interfaces.
